@@ -12,7 +12,7 @@ Solution in the `exercise_2` directory.
 
 Solution in the `exercise_3` directory.
 
-##4. Implement any of the functions from Python's datetime module that are not in Erlang's erlang module.
+##4. Implement any of the functions from Python's datetime class that are not in Erlang's erlang module.
 
 Solution in the `exercise_4` directory.
 
