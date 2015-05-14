@@ -143,7 +143,7 @@ find(Key, D) ->
     find_val(Key, Bkt).
 
 find_val(K, [?kv(K,Val)|_]) -> {ok,Val};
-find_val(K, [_|Bkt]) -> find_val(K, Bkt);
+find_val(K, [_|Bkt]) -> erlang:error(fail), find_val(K, Bkt);
 find_val(_, []) -> error.
 
 -spec fetch_keys(Dict) -> Keys when
