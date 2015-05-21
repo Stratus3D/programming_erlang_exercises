@@ -2,6 +2,9 @@
 
 -export([test/0]).
 
+% For exercise 21.2 we need to test the dict module in as many ways as possible.
+% The tests here will uncover the error present in src/dict.erl.
+
 test() ->
     % Create dictionary
     Dict = dict:new(),
