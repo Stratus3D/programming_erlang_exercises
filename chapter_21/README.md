@@ -6,7 +6,7 @@ I have altered `dict.erl` so a certain line in it will cause it to crash. `dict.
 ##2. Write a simple test module that calls dict in various ways to uncover the error.
 Test module is in `exercise_2/`. In this directory, run:
 
-    erlc src/dict.erl exercise_2/dict_test.erl
+    erlc exercise_1/dict.erl exercise_2/dict_test.erl
     erl
 
 And then in the Erlang console run the tests:
