@@ -15,4 +15,11 @@ And then in the Erlang console run the tests:
 
 
 ##3. Use the code coverage tool to see how many lines in the dict module are being executed by the test module.
+To run the code coverage analysis run this:
+    erlc exercise_1/dict.erl exercise_2/dict_test.erl exercise_3/dict_test_coverage.erl
+    erl
+
+And then in the Erlang console run the tests:
+
+    dict_test_coverage:coverage().
 
