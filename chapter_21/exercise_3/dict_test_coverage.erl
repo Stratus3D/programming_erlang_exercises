@@ -8,6 +8,9 @@ coverage() ->
     % Start the code coverage tool
     {ok, _CoverPid} = cover:start(),
 
+    % We have to do this since the dict module is most likely already loaded.
+    ok = code:unstick_dir("."),
+
     % Compile the dict module we are testing with cover
     {ok, _Mod} = cover:compile("exercise_1/dict.erl"),
 
