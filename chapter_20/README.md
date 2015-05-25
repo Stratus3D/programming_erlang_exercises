@@ -32,3 +32,4 @@
            {tip,"google.com","This site is a fake",undefined}]
            5>
 
+##2. Take the previous exercise and get it run with ram and disk copies on two machines.
