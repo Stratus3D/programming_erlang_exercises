@@ -13,6 +13,10 @@ print_export_details() ->
     Module = module_with_most_exports(),
     io:fwrite("\n~w exports more functions than all other modules.\n", [Module]),
 
+    % Print the most common function name
+    FunName = most_common_function_name(),
+    io:fwrite("\n~w is the most common function name.\n", [FunName]),
+
     % Print all unambiguous function names
     UnambiguousFunctions = unambiguous_function_names(),
     io:fwrite("\nAll unambiguous functions:\n ~w.\n", [UnambiguousFunctions]),
@@ -31,10 +35,23 @@ loaded_modules() ->
 
 module_with_most_exports() ->
     Modules = loaded_modules(),
-    ok.
+    {ModuleName, _Exports} = lists:foldl(fun(NewModuleName, {Module, ExportsLength}) ->
+                       NewModuleLength = length(NewModuleName:module_info(exports)),
+                       case (NewModuleLength >= ExportsLength) of
+                           true ->
+                               {NewModuleName, NewModuleLength};
+                           _ ->
+                               {Module, ExportsLength}
+                       end
+                end, {none, 0}, Modules),
+    ModuleName.
 
 most_common_function_name() ->
     ok.
 
 unambiguous_function_names() ->
+    [].
+
+% Returns an array of all function names from all modules. Includes duplicates
+all_function_names() ->
     [].
