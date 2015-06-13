@@ -11,11 +11,11 @@ print_export_details() ->
 
     % Print name of module with most exports
     Module = module_with_most_exports(),
-    io:fwrite("\n~w exports more functions than all other modules.\n", [Module]),
+    io:fwrite("\nThe ~w module exports more functions than all other modules.\n", [Module]),
 
     % Print the most common function name
     FunName = most_common_function_name(),
-    io:fwrite("\n~w is the most common function name.\n", [FunName]),
+    io:fwrite("\n'~w' is the most common function name.\n", [FunName]),
 
     % Print all unambiguous function names
     UnambiguousFunctions = unambiguous_function_names(),
@@ -47,13 +47,60 @@ module_with_most_exports() ->
     ModuleName.
 
 most_common_function_name() ->
-    FunctionNames = all_function_names(),
-    
-    ok.
+    Functions = all_function_names(),
+
+    % We only care about function names, so we remove arity
+    FunctionNames = remove_function_arity(Functions),
+
+    % Get the number of occurances of each name
+    FunctionNameCounts = count_function_names(FunctionNames),
+
+    % Find the most common function name
+    {Name, _Count} = lists:foldl(fun({Fun, Count}, {MostCommonName, MostCommonNameCount}) ->
+                        case (Count > MostCommonNameCount) of
+                            true ->
+                                {Fun, Count};
+                            _ ->
+                                {MostCommonName, MostCommonNameCount}
+                        end
+                    end, {'_', 0}, FunctionNameCounts),
+    Name.
 
 unambiguous_function_names() ->
-    FunctionNames = all_function_names(),
-    [].
+    Functions = all_function_names(),
+
+    % We only care about function names, so we remove arity
+    FunctionNames = remove_function_arity(Functions),
+
+    % Get the number of occurances of each name
+    FunctionNameCounts = count_function_names(FunctionNames),
+
+    % Find all unambiguous functions return their names
+    lists:filtermap(fun({Fun, Count}) ->
+                            case Count of
+                                1 ->
+                                    {true, Fun};
+                                _ ->
+                                    false
+                            end
+                    end, FunctionNameCounts).
+
+count_function_names(FunctionNames) ->
+    FoldFun = fun(Item, Acc) ->
+                      case proplists:lookup(Item, Acc) of
+                          none ->
+                              % We haven't count this function yet, count it
+                              % now.
+                              Count = length(lists:filter(fun(Val) ->
+                                                                  Item =:= Val
+                                                          end, FunctionNames)),
+                              [{Item, Count}|Acc];
+                          _ ->
+                              % We already have it. Skip
+                              Acc
+                      end
+              end,
+    lists:foldl(FoldFun, [], FunctionNames).
 
 % Returns an array of all function names from all modules. Includes duplicates
 all_function_names() ->
@@ -62,3 +109,12 @@ all_function_names() ->
                     Mod:module_info(exports)
               end, Modules),
     lists:flatten(AllExports).
+
+% Remove function arity
+remove_function_arity(Functions) ->
+    remove_function_arity(Functions, []).
+
+remove_function_arity([], Result) ->
+    Result;
+remove_function_arity([{Name, _Arity}|Functions], Result) ->
+    remove_function_arity(Functions, [Name|Result]).
