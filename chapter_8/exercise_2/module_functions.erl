@@ -47,11 +47,18 @@ module_with_most_exports() ->
     ModuleName.
 
 most_common_function_name() ->
+    FunctionNames = all_function_names(),
+    
     ok.
 
 unambiguous_function_names() ->
+    FunctionNames = all_function_names(),
     [].
 
 % Returns an array of all function names from all modules. Includes duplicates
 all_function_names() ->
-    [].
+    Modules = loaded_modules(),
+    AllExports = lists:map(fun(Mod) ->
+                    Mod:module_info(exports)
+              end, Modules),
+    lists:flatten(AllExports).
