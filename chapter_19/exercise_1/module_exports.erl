@@ -3,5 +3,11 @@
 -export([store_exports/0]).
 
 store_exports() ->
-    Ets = ets:new(module_exports, [bag]),
+    % Create ETS table
+    Ets = ets:new(module_exports, [bag, protected]),
+
+    % Create DETS table
+    {ok, Name} = dets:open_file(?MODULE, []),
+
+
     ok.
