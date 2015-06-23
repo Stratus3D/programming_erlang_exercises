@@ -1,4 +1,4 @@
--module(counter).
+-module(count).
 
 -export([initialize/0, me/2, all_counters/0]).
 
