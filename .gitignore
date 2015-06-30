@@ -1,2 +1,5 @@
 # Ignore all .beam files
 *.beam
+*.COVER.out
+
+*Mnesia.*
