@@ -1,4 +1,4 @@
-programming_erlang_exercises
+Programming Erlang Exercises
 ============================
 
 Stratus3D
