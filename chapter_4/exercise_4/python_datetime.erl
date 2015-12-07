@@ -20,3 +20,6 @@
 % __rsub__                  Not needed
 % __str__                   Not needed
 % __sub__                   -
+%
+% All the other datetime methods are provided by Erlang functions in the erlang
+% and calendar modules.
