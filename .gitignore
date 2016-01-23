@@ -3,3 +3,4 @@
 *.COVER.out
 
 *Mnesia.*
+*.dump
