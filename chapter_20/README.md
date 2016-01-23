@@ -63,3 +63,6 @@ Then run the `all_tips` function to retrieve the tips on node 2:
         undefined},
     {tip,"google.com","Use this site to find stuff",undefined}]
     (node2@localhost)2>
+
+##3. Write function to reject tip submissions if the user has submitted more than 10 tips in a one-day period. Time queries.
+`erlang_tips.erl` for exercise 3 is stored in `exercise_3/`. To run this version of the `erlang_tips` you only need to run one node.
