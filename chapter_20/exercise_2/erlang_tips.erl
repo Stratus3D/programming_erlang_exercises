@@ -10,6 +10,9 @@
         all_abuse/0, get_abuse/1, add_abuse/2, start_database/0,
         create_database/0, reset_tables/0]).
 
+% Change these if your node names are different
+-define(NODE_NAMES, ['node1@localhost', 'node2@localhost']).
+
 %%%===================================================================
 %%% Primary API
 %%%===================================================================
@@ -63,18 +66,18 @@ add_abuse(IpAddress, NumVisits) ->
 
 start_database() ->
     % Get the database in a state where we can query it
-    mnesia:start(),
+    start_mnesia(?NODE_NAMES),
     mnesia:wait_for_tables([user,tip,abuse], 20000).
 
 create_database() ->
     % Create schema
-    ok = mnesia:create_schema([node()]),
+    ok = mnesia:create_schema(?NODE_NAMES),
 
-    % Start mnesia if it's not already started
-    mnesia:start(),
+    % Start mnesia on every node if it's not already started
+    start_mnesia(?NODE_NAMES),
 
     % Table Storage
-    DiskCopies = {disc_copies, [node()]},
+    DiskCopies = {disc_copies, ?NODE_NAMES},
 
     % Create tables
     {atomic, ok} = mnesia:create_table(user, [{attributes, record_info(fields, user)}, DiskCopies]),
@@ -95,3 +98,8 @@ do(Q) ->
     F = fun() -> qlc:e(Q) end,
     {atomic, Val} = mnesia:transaction(F),
     Val.
+
+start_mnesia(Nodes) ->
+    lists:map(fun(Node) ->
+                      ok = rpc:call(Node, mnesia, start, [])
+              end, Nodes).
