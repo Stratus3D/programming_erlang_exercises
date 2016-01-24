@@ -59,7 +59,7 @@ add_tip(Url, Description, Timestamp, UserName) ->
     % Check how many tips have been submitted in the last day
     TipsFromLastDay = get_tips_in_date_range(UserName, TimestampMinusOneDay, Timestamp),
 
-    case TipsFromLastDay > ?MAX_TIPS_PER_DAY of
+    case length(TipsFromLastDay) =< ?MAX_TIPS_PER_DAY of
         true ->
             % Store the tip record in the database
             F = fun() ->
@@ -125,8 +125,8 @@ timestamp_to_seconds({Mega, Sec, _}) ->
     (Mega * 1000000) + Sec.
 
 get_tips_in_date_range(UserName, DateStart, DateEnd) ->
-    do(qlc:q([X || X <- mnesia:table(shop),
-                   X#tip.timestamp < DateEnd, X#tip.timestamp > DateStart, X#tip.user_name =:= UserName
+    do(qlc:q([X || X <- mnesia:table(tip),
+                   X#tip.timestamp =< DateEnd, X#tip.timestamp >= DateStart, X#tip.user_name =:= UserName
              ])).
 
 do_timed(Q) ->
