@@ -3,15 +3,20 @@
 -include_lib("stdlib/include/qlc.hrl").
 
 -record(user, {name, email, password}).
--record(tip, {url, description, date, user_name}).
--record(abuse, {ip_address, num_visits, user_name}).
+-record(tip, {url, description, timestamp, user_name}).
+-record(abuse, {ip_address, num_visits}).
 
--export([all_users/0, get_user/1, add_user/3, all_tips/0, get_tip/1, add_tip/3,
+-export([all_users/0, get_user/1, add_user/3, all_tips/0, get_tip/1, add_tip/4,
         all_abuse/0, get_abuse/1, add_abuse/2, start_database/0,
         create_database/0, reset_tables/0]).
 
 % Change these if your node names are different
 -define(NODE_NAMES, [node()]).
+
+% Maximum number of tips per day
+-define(MAX_TIPS_PER_DAY, 10).
+
+-define(SECONDS_IN_A_DAY, 86400).
 
 %%%===================================================================
 %%% Primary API
@@ -40,13 +45,30 @@ get_tip(Url) ->
     % Select a tip from the tip table by url
     do_timed(qlc:q([X || X <- mnesia:table(tip), X#tip.url == Url])).
 
-add_tip(Url, Description, Date) ->
-    % Create a tip record and store it in the database
-    Tip = #tip{url=Url, description=Description, date=Date},
-    F = fun() ->
-                mnesia:write(Tip)
-        end,
-    mnesia:transaction(F).
+add_tip(Url, Description, Timestamp, UserName) ->
+    % Create a tip
+    % We have to record the user's name now in order to determine how many
+    % submissions they have made over the last day
+    Tip = #tip{url=Url, description=Description, timestamp=Timestamp, user_name=UserName},
+
+    % Compute the timestamp of 24 hours earlier than `Timestamp`
+    Seconds = timestamp_to_seconds(Timestamp),
+    SecondsMinusOneDay = Seconds - ?SECONDS_IN_A_DAY,
+    TimestampMinusOneDay = seconds_to_timestamp(SecondsMinusOneDay),
+
+    % Check how many tips have been submitted in the last day
+    TipsFromLastDay = get_tips_in_date_range(UserName, TimestampMinusOneDay, Timestamp),
+
+    case TipsFromLastDay > ?MAX_TIPS_PER_DAY of
+        true ->
+            % Store the tip record in the database
+            F = fun() ->
+                        mnesia:write(Tip)
+                end,
+            mnesia:transaction(F);
+        false ->
+            {error, {daily_tip_limit_met, ?MAX_TIPS_PER_DAY}}
+    end.
 
 all_abuse() ->
     % Get all abuse records in the abuse table
@@ -94,12 +116,27 @@ reset_tables() ->
 %%%===================================================================
 %%% Private functions
 %%%===================================================================
+
+seconds_to_timestamp(Seconds) ->
+    {Seconds div 1000000, Seconds rem 1000000, 0}.
+
+timestamp_to_seconds({Mega, Sec, _}) ->
+    % Convert the now timestamp to seconds
+    (Mega * 1000000) + Sec.
+
+get_tips_in_date_range(UserName, DateStart, DateEnd) ->
+    do(qlc:q([X || X <- mnesia:table(shop),
+                   X#tip.timestamp < DateEnd, X#tip.timestamp > DateStart, X#tip.user_name =:= UserName
+             ])).
+
 do_timed(Q) ->
   % Here we time the call to do/1
   {Time, Result} = timer:tc(fun do/1, [Q]),
 
   % Then we print the number of microseconds the call took
   io:format("Query ~w took ~w microseconds.~n", [Q, Time]),
+  % In a real world scenario we would likely make a call to an server
+  % recording application metrics
   Result.
 
 do(Q) ->
