@@ -26,6 +26,7 @@ And then in the Erlang console run the command to generate the code coverage res
 
 ##4. Use the dbg module to find the error in the dict module
 The dbg script is stored in the `exercise_4` directory. To run the dbg tracing on the dict module compile the code and start an erl console:
+
     erlc exercise_1/dict.erl exercise_2/dict_test.erl exercise_3/dict_test_coverage.erl
     erl
 
