@@ -1,0 +1,10 @@
+{
+    "param1": "value1",
+    "param2": "value2",
+    "param3": ["one", "two", "three"],
+    "param4": [],
+    "param5": {
+        "sub1": "test1",
+        "sub2": "test2"
+    }
+}
