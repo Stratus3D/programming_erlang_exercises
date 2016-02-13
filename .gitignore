@@ -4,3 +4,4 @@
 
 *Mnesia.*
 *.dump
+deps/*
