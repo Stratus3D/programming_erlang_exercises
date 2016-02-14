@@ -33,3 +33,4 @@ Solution to the exercise is in the `exercise_2` directory. Example usage:
     3>
 
 ##3. Make an Erlang module with functions equivalent to the methods defined in Ruby's Hash class.
+Solution to the exercise is in the `exercise_3` directory.
