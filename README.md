@@ -14,26 +14,26 @@ Solutions to the exercises in Joe Armstrong's book *Programming Erlang* 2nd Edit
 * Chapter 5 - [exercises 1, 2, and 3 in the chapter_5 directory](chapter_5/)
 * Chapter 6 - [exercises 1 and 2 in the chapter_6 directory](chapter_6/)
 * Chapter 7 - [WIP](chapter_7/)
-* Chapter 8
-* Chapter 9
-* Chapter 10
-* Chapter 11
-* Chapter 12
-* Chapter 13
-* Chapter 14
-* Chapter 15
-* Chapter 16
-* Chapter 17
-* Chapter 18
-* Chapter 19
-* Chapter 20
-* Chapter 21
-* Chapter 22
-* Chapter 23
-* Chapter 24
-* Chapter 25
-* Chapter 26
-* Chapter 27
+* Chapter 8 - [exercises 1 and 2 in the chapter_8 directory](chapter_8/)
+* Chapter 9 - [WIP](chapter_8/)
+* Chapter 10 - WIP
+* Chapter 11 - no exercises
+* Chapter 12 - WIP
+* Chapter 13 - [WIP](chapter_13/)
+* Chapter 14 - [WIP](chapter_14/)
+* Chapter 15 - WIP
+* Chapter 16 - WIP
+* Chapter 17 - WIP
+* Chapter 18 - WIP
+* Chapter 19 - [WIP](chapter_19/)
+* Chapter 20 - [exercises 1, 2, and 3 in the chapter_20 directory](chapter_20/)
+* Chapter 21 - [exercise 1, 2, 3, and 4 in chapter_21 directory](chapter_21/)
+* Chapter 22 - WIP
+* Chapter 23 - WIP
+* Chapter 24 - WIP
+* Chapter 25 - WIP
+* Chapter 26 - WIP
+* Chapter 27 - no exercises
 
 ##Issues
 If you see something that could be improved feel free to open an issue on GitHub ([https://github.com/Stratus3D/programming_erlang_exercises/issues](https://github.com/Stratus3D/programming_erlang_exercises/issues))
