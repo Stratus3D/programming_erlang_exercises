@@ -13,7 +13,7 @@ Solutions to the exercises in Joe Armstrong's book *Programming Erlang* 2nd Edit
 * Chapter 4 - [exercises 1, 2, 3, 4, 5, 6, and 7 in the chapter_4 directory](chapter_4/)
 * Chapter 5 - [exercises 1, 2, and 3 in the chapter_5 directory](chapter_5/)
 * Chapter 6 - [exercises 1 and 2 in the chapter_6 directory](chapter_6/)
-* Chapter 7 - [WIP](chapter_7/)
+* Chapter 7 - [exercises 1, 2, 3, 4, and 5 in the chapter_7 directory](chapter_7/)
 * Chapter 8 - [exercises 1 and 2 in the chapter_8 directory](chapter_8/)
 * Chapter 9 - [WIP](chapter_8/)
 * Chapter 10 - WIP
