@@ -1,6 +1,6 @@
-#Exercises for Chapter 2
+# Exercises for Chapter 2
 
-##1. Start and stop the Erlang shell
+## 1. Start and stop the Erlang shell
 
 To start the shell run `erl`:
 
@@ -18,7 +18,7 @@ Then to exit the shell run:
 
 Then type `a`.
 
-##2. Run a few commands in the shell
+## 2. Run a few commands in the shell
 
     $ erl
     Erlang R16B01 (erts-5.10.2) [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false]
@@ -31,8 +31,8 @@ Then type `a`.
     ok
     3>
 
-##3. Make a small modification to hello.erl
+## 3. Make a small modification to hello.erl
 I updated it by allowing it to take an a single argument and greet the variable instead of `World`. See source file in exercise_3/.
 
-##4. Run the client and server code
+## 4. Run the client and server code
 The source files are the exercise_2 directory. A put_file/3 function as been added to the client. The server has also been updated to handle the new command.
