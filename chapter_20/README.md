@@ -1,6 +1,6 @@
-#Exercises for Chapter 20
+# Exercises for Chapter 20
 
-##1. Build a database for a website. Database needs to have three tables: users, tips and abuse.
+## 1. Build a database for a website. Database needs to have three tables: users, tips and abuse.
 `erlang_tips.erl` is stored in `exercise_1/`. Example usage:
 
     1> erlang_tips:module_info(exports).
@@ -32,7 +32,7 @@
            {tip,"google.com","This site is a fake",undefined}]
            5>
 
-##2. Take the previous exercise and get it run with ram and disk copies on two nodes.
+## 2. Take the previous exercise and get it run with ram and disk copies on two nodes.
 `erlang_tips.erl` is stored in `exercise_2/`. To run the `erlang_tips` database on two nodes open up two terminal sessions and start two Erlang nodes. The first:
 
     cd exercise_2/
@@ -64,5 +64,5 @@ Then run the `all_tips` function to retrieve the tips on node 2:
     {tip,"google.com","Use this site to find stuff",undefined}]
     (node2@localhost)2>
 
-##3. Write function to reject tip submissions if the user has submitted more than 10 tips in a one-day period. Time queries.
+## 3. Write function to reject tip submissions if the user has submitted more than 10 tips in a one-day period. Time queries.
 `erlang_tips.erl` for exercise 3 is stored in `exercise_3/`. To run this version of the `erlang_tips` you only need to run one node.
