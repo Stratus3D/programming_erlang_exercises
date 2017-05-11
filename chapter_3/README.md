@@ -1,8 +1,8 @@
-#Exercises for Chapter 3
+# Exercises for Chapter 3
 
-##1. Memorize the commands on page 27.
+## 1. Memorize the commands on page 27.
 
-##2. Execute the `help()` function in the shell
+## 2. Execute the `help()` function in the shell
 
     $ erl
     Erlang R16B01 (erts-5.10.2) [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false]
@@ -59,7 +59,7 @@
     true
     2>
 
-##3. Try representing a house as a tuple and a street as a list of houses (tuples).
+## 3. Try representing a house as a tuple and a street as a list of houses (tuples).
 
 So we are tasked with the job of representing a house as a tuple. A house could be represented many different ways in Erlang. Since the details are a little vague we will represent a house as a tuple of 4 elements taking this form: `{Address, NumberOfBedrooms, NumberOfBathrooms, ListOfAdditionalFeatures}`. Examples:
 
