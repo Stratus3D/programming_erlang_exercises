@@ -5,7 +5,7 @@ Stratus3D
 
 Solutions to the exercises in Joe Armstrong's book *Programming Erlang* 2nd Edition. Solutions are my own. Better ones may exist.
 
-##Index
+## Index
 
 * Chapter 1 - no exercises
 * Chapter 2 - [exercises 3 and 4 in the chapter_2 directory](chapter_2/)
@@ -35,7 +35,7 @@ Solutions to the exercises in Joe Armstrong's book *Programming Erlang* 2nd Edit
 * Chapter 26 - WIP
 * Chapter 27 - no exercises
 
-##Issues
+## Issues
 If you see something that could be improved feel free to open an issue on GitHub ([https://github.com/Stratus3D/programming_erlang_exercises/issues](https://github.com/Stratus3D/programming_erlang_exercises/issues))
 
 ## Contributing
