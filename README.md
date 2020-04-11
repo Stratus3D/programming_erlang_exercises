@@ -3,7 +3,7 @@ Programming Erlang Exercises
 
 Stratus3D
 
-Solutions to the exercises in Joe Armstrong's book *Programming Erlang* 2nd Edition. Solutions are my own. Better ones may exist.
+Solutions to the exercises in Joe Armstrong's book *[Programming Erlang](https://pragprog.com/book/jaerlang2/programming-erlang)* 2nd Edition. Solutions are my own. Better ones may exist.
 
 ## Index
 
@@ -18,7 +18,7 @@ Solutions to the exercises in Joe Armstrong's book *Programming Erlang* 2nd Edit
 * Chapter 9 - [exercises 1, 2, 3, and 4 in the chapter_9 directory](chapter_9/)
 * Chapter 10 - [exercise 1 in the chapter_10 directory](chapter_10/)
 * Chapter 11 - no exercises
-* Chapter 12 - WIP
+* Chapter 12 - [exercises 1, 2, and 3 in the chapter_12 directory](chapter_12/)
 * Chapter 13 - [WIP](chapter_13/)
 * Chapter 14 - [WIP](chapter_14/)
 * Chapter 15 - WIP
@@ -28,7 +28,7 @@ Solutions to the exercises in Joe Armstrong's book *Programming Erlang* 2nd Edit
 * Chapter 19 - [WIP](chapter_19/)
 * Chapter 20 - [exercises 1, 2, and 3 in the chapter_20 directory](chapter_20/)
 * Chapter 21 - [exercise 1, 2, 3, and 4 in chapter_21 directory](chapter_21/)
-* Chapter 22 - WIP
+* Chapter 22 - [WIP](chapter_22/)
 * Chapter 23 - WIP
 * Chapter 24 - WIP
 * Chapter 25 - WIP
