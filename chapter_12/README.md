@@ -44,3 +44,17 @@ The graphs should look something like the one below
 ![30,000 Processes Graph](exercise_2/30000_graph.png)
 
 Looking at these graphs it is clear that the average spawn time for a single process is constant. Whether there is 1 process running or 10,000, spawning a new proceses takes about the same amount of time.
+
+**3. Write a ring benchmark. Create a N processes in a ring. Send a message around the ring M times so that N * M messages are sent. Time how long it takes for different values of N and M.**
+
+In `exercises_3/` there is a file named `process_ring.erl`. The file defines a module that exports a function named `run/3`. Invoking this function spawns a ring of processes and sends a message around the ring the number of times specified. The time it takes to spawn the ring and send the message around it is printed out by the function.
+
+Example usage:
+
+```
+$ erlc process_ring.erl
+$ erl
+1> process_ring:run(1000, 1000, message).
+Spawning 1000 processes and sending the message around the ring 1000 times took 485268 microseconds
+stop
+```
