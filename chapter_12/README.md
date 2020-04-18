@@ -39,4 +39,8 @@ $ gnuplot -p spawn_times_30000.gnuplot
 # generates graph of average runtimes for up to 30,000 processes
 ```
 
+The graphs should look something like the one below
+
+![30,000 Processes Graph](exercises_2/30000_graph.png)
+
 Looking at these graphs it is clear that the average spawn time for a single process is constant. Whether there is 1 process running or 10,000, spawning a new proceses takes about the same amount of time.
