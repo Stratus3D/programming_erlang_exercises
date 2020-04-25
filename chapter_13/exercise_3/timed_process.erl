@@ -1,5 +1,5 @@
 -module(timed_process).
--export([test/0, spawn_and_limit/4, test_spawn_and_limit/0]).
+-export([test/0, my_spawn/4, test_my_spawn/0]).
 
 test() ->
   receive
@@ -10,7 +10,7 @@ test() ->
       exit(self(), kill)
   end.
 
-spawn_and_limit(Module, Function, Args, Seconds) ->
+my_spawn(Module, Function, Args, Seconds) ->
   Pid = spawn(Module, Function, Args),
   kill_after(Pid, Seconds).
 
@@ -39,5 +39,5 @@ calculate_time_difference(Current, Past) ->
   {PastMega, PastSecs, _} = Past,
   (Mega * 1000000 + Secs) - (PastMega * 1000000 + PastSecs).
 
-test_spawn_and_limit() ->
-  ?MODULE:spawn_and_limit(?MODULE, test, [], 3).
+test_my_spawn() ->
+  ?MODULE:my_spawn(?MODULE, test, [], 3).
