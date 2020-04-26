@@ -23,12 +23,20 @@ Solution in [exercise_5/](exercise_5). The code is in `workers.erl`
 Example usage:
 
 ```
-erlc workers.erl
+erlc worker_supervisors.erl
 erl
+% Start the supervisor with a list of children
+1> SupervisorPid = worker_supervisor:start(worker_supervisor:definition()).
+I'm still running
+I'm still running
+% Get one of the child processes
+2> WorkerData = worker_supervisor:get_workers(SupervisorPid).
+[{<0.41.0>,#Ref<0.0.4.148>,-576460742360537501,{worker_supervisor,test,[]}},
+ {<0.42.0>,#Ref<0.0.4.149>,-576460742360529319,{worker_supervisor,test,[]}}]
+3> [{Pid, _, _, _}|_] = WorkerData.
+% And kill it to verify it got restarted
+4> exit(Pid, test).
 1> workers:spawn_and_restart_workers(workers:definition()).
-[<0.40.0>,<0.42.0>]
-I'm still running
-I'm still running
 ```
 
 **6. Write a function that spawns and monitors several processes. If any monitored processes dies, kill all the processes and restart them.**
