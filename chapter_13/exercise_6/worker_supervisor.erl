@@ -73,12 +73,12 @@ handle_crashes(WorkerData) ->
           io:format("Process ~w died in ~w millisconds with reason: ~w~n", [Pid, TimeDifference, Why]),
 
           % Kill all the worker processes
-          lists:foreach(fun({WorkerPid, _WorkerRef, _WorkerMFA}) ->
-                                erlang:is_alive(WorkerPid) and exit(WorkerPid, kill)
+          lists:foreach(fun({WorkerPid, WorkerRef, _WorkerStartTime, _WorkerMFA}) ->
+                                is_process_alive(WorkerPid) and demonitor(WorkerRef) and exit(WorkerPid, kill)
                         end, WorkerData),
 
           % Respawn the all the worker processes
-          NewWorkerData = lists:map(fun({_WorkerPid, _WorkerRef, {Module, Function, Arguments}}) ->
+          NewWorkerData = lists:map(fun({_WorkerPid, _WorkerRef, _WorkerStartTime, {Module, Function, Arguments}}) ->
                                             spawn_with_time(Module, Function, Arguments)
                                     end, WorkerData),
           io:format("All Processes Restarted~n"),
