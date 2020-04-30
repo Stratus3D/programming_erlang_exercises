@@ -1,3 +1,0 @@
--module(rpc_example).
-
-
