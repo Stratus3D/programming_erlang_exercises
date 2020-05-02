@@ -32,4 +32,38 @@ Make sure port 4369 is open on both computers, and then choose a range of ports 
 
 **4. Write a simple file server using the libraries in lib_chan.**
 
+Solution is in the `exercise_4/` directory. Compile the lib_chan and yaf server code:
 
+```
+cd exercise_4/
+erlc *.erl
+erlc lib_chan/*.erl
+```
+
+Then start the server in an `erl` shell:
+
+```
+erl -pa lib_chan -pa .
+1> yaf_server:start().
+lib_chan starting:"lib_chan.conf"
+ConfigData=[{port,1234},
+            {service,yaf_server,password,"123files",mfa,yaf_server,
+                     start_file_server_loop,
+                     [{location,"shared_files"}]}]
+```
+
+In another shell:
+
+```
+erl -pa lib_chan -pa .
+1> {ok, Pid} = lib_chan:connect("localhost", 1234, "123files", yaf_server, []).
+% List files
+2> lib_chan:rpc(Pid, {ls, "/"}).
+{ok,["afile.txt"]}
+% Read a file
+3> lib_chan:rpc(Pid, {read, "/afile.txt"}).
+{ok,<<"You read a file from the server!\n">>}
+% Write a new file
+4>lib_chan:rpc(Pid, {write, "another_file.txt", "New file!!!"}).
+ok
+```
