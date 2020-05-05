@@ -32,7 +32,7 @@ Make sure port 4369 is open on both computers, and then choose a range of ports 
 
 **4. Write a simple file server using the libraries in lib_chan.**
 
-Solution is in the `exercise_4/` directory. Compile the lib_chan and yaf server code:
+Solution is in the `exercise_4/` directory. My implementation is a very minimal file server. Compile the lib_chan and yaf server code:
 
 ```
 cd exercise_4/
@@ -52,7 +52,7 @@ ConfigData=[{port,1234},
                      [{location,"shared_files"}]}]
 ```
 
-In another shell:
+In another shell make the client calls:
 
 ```
 erl -pa lib_chan -pa .
