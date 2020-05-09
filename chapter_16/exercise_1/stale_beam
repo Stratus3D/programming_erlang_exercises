@@ -1,0 +1,30 @@
+#!/usr/bin/env escript
+
+-include_lib("kernel/include/file.hrl").
+
+print_usage() ->
+  io:format("stale_beam some/erlang/module.erl").
+
+main([Filename]) ->
+  {ok, #file_info{mtime=ModifiedTime}} = file:read_file_info(Filename),
+  BeamFilename = beam_filename(Filename),
+  {ok, #file_info{mtime=BeamModifiedTime}} = file:read_file_info(BeamFilename),
+  %io:format("Modified Time: ~p~n", [ModifiedTime]),
+  %io:format("Beam Modified Time: ~p~n", [BeamModifiedTime]),
+
+  {Days, _Time} = calendar:time_difference(ModifiedTime, BeamModifiedTime),
+  case Days of
+    Days when Days >= 0 ->
+      io:format("Beam file is up to date~n", []);
+    _ ->
+      io:format("Beam file is out of date. Recompile~n", [])
+  end;
+
+main(_) ->
+  % Print usage message if invalid number of arguments is passed in
+  print_usage(),
+  halt(1).
+
+% Use regex to replace .erl with .beam in the filenames
+beam_filename(FilenameErl) ->
+  re:replace(FilenameErl, "\.erl$", ".beam", [{return, list}]).
