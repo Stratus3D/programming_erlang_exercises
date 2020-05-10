@@ -1,0 +1,41 @@
+#!/usr/bin/env escript
+
+-include_lib("kernel/include/file.hrl").
+
+print_usage() ->
+  io:format("./emd5sum <file name>~n").
+
+main([Filename]) ->
+  {ok, File} = file:open(Filename, [read, binary, raw]),
+  Sum = compute_md5_sum(File),
+  file:close(File),
+  io:format("~s~n", [hex_string(Sum)]),
+  halt(0);
+main(_) ->
+  % Print usage message if invalid number of arguments is passed in
+  print_usage(),
+  halt(1).
+
+compute_md5_sum(File) ->
+  % Compute md5 sum incrementally
+  Context = erlang:md5_init(),
+  NewContext = compute_md5_sum(File, Context),
+  % Return the file md5 sum
+  erlang:md5_final(NewContext).
+
+compute_md5_sum(File, Context) ->
+    % Read more of the file
+    case file:read(File, 4096) of
+        {ok, Data} ->
+            % Update context with new data
+            NewContext = erlang:md5_update(Context, Data),
+            compute_md5_sum(File, NewContext);
+        eof ->
+            Context
+    end.
+
+% From https://stackoverflow.com/questions/3768197/erlang-ioformatting-a-binary-to-hex
+% We need to format each byte in the hex binary as a set of two ascii
+% characters in order to construct an printable string of characters.
+hex_string(HexBin) ->
+    [io_lib:format("~2.16.0B",[X]) || <<X:8>> <= HexBin].
