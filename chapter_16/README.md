@@ -10,6 +10,13 @@ $ ./stale_beam ../../chapter_15/exercise_3/cpu_info.erl
 
 **2. Use erlang:md5/1 to compute the checksum of a small file**
 
+Solution in the `exercise_2/` directory. I put the code in an escript so it is easy to use on the command line.
+
+```bash
+$ ./emd5sum emd5sum
+07357C74F0992326718D133D7DDD5F01
+```
+
 **3. Repeat the previous exercise for a large file (a few hundred megabytes). Read the file in chunks and use `erlang:md5_init`, `erlang:md5_update` and `erlang:md5_final` to compute the sum.**
 
 **4. Use the `lib_find` module to find all `.jpg` files on your computer. Check for identical files by computing the MD5 sum of each file and comparing the computed sums.**
