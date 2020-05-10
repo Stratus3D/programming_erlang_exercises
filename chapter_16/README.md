@@ -34,3 +34,21 @@ $ ./emd5sum emd5sum
 **5. Write a caching mechanism that computes the MD5 sum of a file and stores it with the last modified time of the file. When the sum is requested check if the file has changed and return the cached sum if it hasn't**
 
 **6. Tweets are exactly 140 bytes long. Write a random access twit storage module that exports the following functions: `init(N)` allocates space for N number of tweets. `store(N, Buf)` to store tweet (140 byte Buf) at N location. `fetch(N)` fetches the data for tweet number N.**
+
+Solution in the `exercise_6/` directory.
+```
+erl
+1> tweet_store:init(3).
+ok
+2> tweet_store:store(2, <<"A short tweet">>).
+ok
+3> tweet_store:store(3, <<"Another short tweet">>).
+ok
+4> tweet_store:fetch(2).
+<<"A short tweet">>
+5> tweet_store:fetch(3).
+<<"Another short tweet">>
+6> tweet_store:fetch(1).
+<<>>
+7>
+```
