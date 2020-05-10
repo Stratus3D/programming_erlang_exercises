@@ -33,6 +33,25 @@ $ ./emd5sum emd5sum
 
 **5. Write a caching mechanism that computes the MD5 sum of a file and stores it with the last modified time of the file. When the sum is requested check if the file has changed and return the cached sum if it hasn't**
 
+Solution in the `exercise_5/` directory.
+
+```
+$ erlc md5_cache.erl
+$ erl
+Erlang/OTP 19 [erts-8.2] [source] [64-bit] [smp:4:4] [async-threads:10] [hipe] [kernel-poll:false]
+Eshell V8.2  (abort with ^G)
+1> md5_cache:start_link().
+{ok,<0.66.0>}
+2> md5_cache:get_md5("md5_cache.erl").
+MD5 hash is not up to date
+{ok,<<230,12,220,207,212,102,157,69,193,161,120,23,149,
+      187,231,52>>}
+3> md5_cache:get_md5("md5_cache.erl").
+MD5 hash is up to date
+{ok,<<230,12,220,207,212,102,157,69,193,161,120,23,149,
+      187,231,52>>}
+```
+
 **6. Tweets are exactly 140 bytes long. Write a random access twit storage module that exports the following functions: `init(N)` allocates space for N number of tweets. `store(N, Buf)` to store tweet (140 byte Buf) at N location. `fetch(N)` fetches the data for tweet number N.**
 
 Solution in the `exercise_6/` directory.
