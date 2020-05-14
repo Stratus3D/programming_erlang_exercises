@@ -1,0 +1,104 @@
+#!/usr/bin/env escript
+
+-include_lib("kernel/include/file.hrl").
+
+-import(lists, [reverse/1]).
+
+print_usage() ->
+  io:format("./find_duplicate_jpegs~n").
+
+main([]) ->
+  Files = files(<<"/">>, "*\\.jpg", true),
+
+  % Map files to tuples of hash and list of filename
+  HashesAndFilenames = lists:foldl(fun(Filename, Acc) ->
+                                           {ok, Data} = file:read_file(Filename),
+                                           Hash = erlang:md5(Data),
+                                           case proplists:lookup(Hash, Acc) of
+                                               none ->
+                                                   [{Hash, [Filename]}|Acc];
+                                               {Hash, Filenames} ->
+                                                   lists:keyreplace(Hash, 1, Acc, {Hash, [Filename|Filenames]})
+                                           end
+                                end, [], Files),
+
+  % Find duplicate hashes
+  DuplicateHashes = lists:filter(fun
+                                     ({_Hash, Filenames}) when length(Filenames) > 1 -> true;
+                                     (_) -> false
+
+              end, HashesAndFilenames),
+
+  % Print duplicate file names
+  lists:foreach(fun({Hash, Filenames}) ->
+                        Arguments = [hex_string(Hash), lists:join("\n", Filenames)],
+                        io:format("Duplicate files with content hashed as ~s:~n~s~n~n", Arguments)
+                end, DuplicateHashes),
+  halt(0);
+main(_) ->
+  % Print usage message if invalid number of arguments is passed in
+  print_usage(),
+  halt(1).
+
+% From https://stackoverflow.com/questions/3768197/erlang-ioformatting-a-binary-to-hex
+% We need to format each byte in the hex binary as a set of two ascii
+% characters in order to construct an printable string of characters.
+hex_string(HexBin) ->
+    [io_lib:format("~2.16.0B",[X]) || <<X:8>> <= HexBin].
+
+% Code from the lib_find module
+%% ---
+%%  Excerpted from "Programming Erlang, Second Edition",
+%%  published by The Pragmatic Bookshelf.
+%%  Copyrights apply to this code. It may not be used to create training material,
+%%  courses, books, articles, and the like. Contact us if you are in doubt.
+%%  We make no guarantees that this code is fit for any purpose.
+%%  Visit http://www.pragmaticprogrammer.com/titles/jaerlang2 for more book information.
+%%---
+
+files(Dir, Re, Flag) ->
+    Re1 = xmerl_regexp:sh_to_awk(Re),
+    reverse(files(Dir, Re1, Flag, fun(File, Acc) ->[File|Acc] end, [])).
+
+files(Dir, Reg, Recursive, Fun, Acc) ->
+    case file:list_dir(Dir) of
+	{ok, Files} -> find_files(Files, Dir, Reg, Recursive, Fun, Acc);
+	{error, _}  -> Acc
+    end.
+
+find_files([File|T], Dir, Reg, Recursive, Fun, Acc0) ->
+    FullName = filename:join([Dir,File]),
+    case file_type(FullName) of
+	regular ->
+	    case re:run(FullName, Reg, [{capture,none}]) of
+		match  ->
+		    Acc = Fun(FullName, Acc0),
+		    find_files(T, Dir, Reg, Recursive, Fun, Acc);
+		nomatch ->
+		    find_files(T, Dir, Reg, Recursive, Fun, Acc0)
+	    end;
+	directory ->
+	    case Recursive of
+		true ->
+		    Acc1 = files(FullName, Reg, Recursive, Fun, Acc0),
+		    find_files(T, Dir, Reg, Recursive, Fun, Acc1);
+		false ->
+		    find_files(T, Dir, Reg, Recursive, Fun, Acc0)
+	    end;
+	error ->
+	    find_files(T, Dir, Reg, Recursive, Fun, Acc0)
+    end;
+find_files([], _, _, _, _, A) ->
+    A.
+
+file_type(File) ->
+    case file:read_file_info(File) of
+	{ok, Facts} ->
+	    case Facts#file_info.type of
+		regular   -> regular;
+		directory -> directory;
+		_         -> error
+	    end;
+	_ ->
+	    error
+    end.

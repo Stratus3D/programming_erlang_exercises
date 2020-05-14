@@ -31,6 +31,13 @@ $ ./emd5sum emd5sum
 
 **4. Use the `lib_find` module to find all `.jpg` files on your computer. Check for identical files by computing the MD5 sum of each file and comparing the computed sums.**
 
+Solution in the `exercise_5/` directory.
+
+```bash
+# Run the escript and it will use lib_find to find all duplicate JPEGs. Duplicate JPEGs will be printed.
+$ ./find_duplicate_jpegs
+```
+
 **5. Write a caching mechanism that computes the MD5 sum of a file and stores it with the last modified time of the file. When the sum is requested check if the file has changed and return the cached sum if it hasn't**
 
 Solution in the `exercise_5/` directory.
