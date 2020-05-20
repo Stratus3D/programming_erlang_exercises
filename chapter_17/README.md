@@ -56,6 +56,30 @@ Client result = {5}
 
 **3. Repeat the previous exercise using UDP.**
 
+Solution to the exercise in the [exercise_3](exercise_3/) directory.
+
+In one `erl` shell run the server:
+
+```
+erl
+1> nano_server:start().
+Server received binary = <<131,104,3,100,0,6,101,114,108,97,110,103,100,0,13,
+                           108,105,115,116,95,116,111,95,116,117,112,108,101,
+                           108,0,0,0,1,107,0,2,1,23,106>>
+Server (unpacking)  {erlang,list_to_tuple,[[1,23]]}
+Server replying = {1,23}
+```
+
+And in another run the client:
+
+```
+erl
+1> nano_client:send(erlang, list_to_tuple, [[1,23]]).
+Client received binary = <<131,104,2,97,1,97,23>>
+Client result = {1,23}
+{1,23}
+```
+
 **4. Add a layer of cryptography by encoding the binary before sending it to the outgoing socket and decoding it after it is received on the incoming socket.**
 
 **5. Make a simple "email-like" system. use Eralng terms as messages and store them in `$HOME/mbox`.**
