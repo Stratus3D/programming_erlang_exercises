@@ -30,6 +30,30 @@ Redirected to: http://www.google.com/webhp
 
 **2. Enter the cdoe for a simple TCP server on page 267. Modify the code to receive a `{Mod, Func, Args}` tuple instead of a string. Compute `Reply = apply(Mod, Func, Args)` and send the value back to the socket. Write equivalent client code that encodes the `Mod`, `Func`, and `Args` in a form understood by the server.**
 
+Solution to the exercise in the [exercise_2](exercise_2/) directory.
+
+In one `erl` shell run the server:
+
+```
+erl
+1> nano_server:start().
+Server received binary = <<131,104,3,100,0,6,101,114,108,97,110,103,100,0,13,
+                           108,105,115,116,95,116,111,95,116,117,112,108,101,
+                           108,0,0,0,1,107,0,1,5,106>>
+Server (unpacking)  {erlang,list_to_tuple,[[5]]}
+Server replying = {5}
+Server socket closed
+```
+
+And in another run the client:
+
+```
+erl
+1> nano_client:send(erlang, list_to_tuple, [[5]]).
+Client received binary = <<131,104,1,97,5>>
+Client result = {5}
+```
+
 **3. Repeat the previous exercise using UDP.**
 
 **4. Add a layer of cryptography by encoding the binary before sending it to the outgoing socket and decoding it after it is received on the incoming socket.**
