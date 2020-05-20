@@ -2,7 +2,7 @@
 
 **1. Modify the code for `nano_get_url` by adding the appropriate headers where necessary and performing redirects if needed in order to fetch any webpage**
 
-Solution to exercise in [excerise_1](exercise_1/) directory.
+Solution to exercise in [exercise_1](exercise_1/) directory.
 
 ```
 erl
