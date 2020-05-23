@@ -82,4 +82,28 @@ Client result = {1,23}
 
 **4. Add a layer of cryptography by encoding the binary before sending it to the outgoing socket and decoding it after it is received on the incoming socket.**
 
+Solution to the exercise in the [exercise_4](exercise_4/) directory.
+
+In one `erl` shell run the server:
+
+```
+erl
+1> nano_server:start().
+Server received binary = <<131,104,3,100,0,6,101,114,108,97,110,103,100,0,13,
+                           108,105,115,116,95,116,111,95,116,117,112,108,101,
+                           108,0,0,0,1,107,0,1,5,106>>
+Server (unpacking)  {erlang,list_to_tuple,[[5]]}
+Server replying = {5}
+Server socket closed
+```
+
+And in another run the client:
+
+```
+erl
+1> nano_client:send(erlang, list_to_tuple, [[5]]).
+Client received binary = <<131,104,1,97,5>>
+Client result = {5}
+```
+
 **5. Make a simple "email-like" system. use Eralng terms as messages and store them in `$HOME/mbox`.**
