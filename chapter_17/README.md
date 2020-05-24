@@ -107,3 +107,49 @@ Client result = {5}
 ```
 
 **5. Make a simple "email-like" system. use Eralng terms as messages and store them in `$HOME/mbox`.**
+
+Solution to the exercise in the [exercise_4](exercise_4/) directory. I chose to keep this as simple as possible and not require any authentication for checking email messages. Any user can read the messages of any other user on the servers.
+
+In one `erl` shell run the server:
+
+```
+ erl
+Erlang/OTP 19 [erts-8.2] [source] [64-bit] [smp:4:4] [async-threads:10] [hipe] [kernel-poll:false]
+
+Eshell V8.2  (abort with ^G)
+1> nano_server:start().
+Server (unpacking)  {"Stratus3D",{send_msg,"Hey there!"}}
+Writing "~/mbox/Stratus3D/576460656748859828-message.txt"
+Server replying = ok
+Server socket closed
+Server (unpacking)  {"Stratus3D",{send_msg,"hello?"}}
+Writing "~/mbox/Stratus3D/576460656748859828-message.txt"
+Server replying = ok
+Server socket closed
+Server received binary = <<131,104,2,107,0,6,116,114,101,118,111,114,100,0,12,
+                           103,101,116,95,97,108,108,95,109,115,103,115>>
+Server (unpacking)  {"Stratus3D",get_all_msgs}
+                   {"576460739590151126-message.txt",<<"Hey there!">>},
+                   {"576460739789060103-message.txt",<<"hello?">>},
+Server socket closed
+Server received binary = <<131,104,2,107,0,6,116,114,101,118,111,114,104,2,100,
+                           0,8,115,101,110,100,95,109,115,103,107,0,6,104,101,
+                           108,108,111,63>>
+```
+
+And in another run the client:
+
+```
+erl
+1> nano_client:send_msg("Stratus3D", "localhost", "Hey there!").
+Client received binary = <<131,100,0,2,111,107>>
+Client result = ok
+ok
+1> nano_client:send_msg("Stratus3D", "localhost", "hello?").
+Client received binary = <<131,100,0,2,111,107>>
+Client result = ok
+ok
+2> nano_client:receive_msgs("Stratus3D", "localhost").
+Client result = [{"576460739590151126-message.txt",<<"Hey there!">>},
+                 {"576460739789060103-message.txt",<<"hello?">>}]
+```
