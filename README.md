@@ -22,8 +22,8 @@ Solutions to the exercises in Joe Armstrong's book *[Programming Erlang](https:/
 * Chapter 13 - [exercises 1, 2, 3, 4, 5 and 6 in chapter_13 directory](chapter_13/)
 * Chapter 14 - [exercises 1, 2, 3 and 4 in chapter_14 directory](chapter_14/)
 * Chapter 15 - [exercises 3 in the chapter 15 directory](chapter_15/)
-* Chapter 16 - WIP
-* Chapter 17 - WIP
+* Chapter 16 - [exercises 1, 2, 3, 4, 5 and 6 in the chapter_16 directory](chapter_16/)
+* Chapter 17 - [exercises 1, 2, 3, 4 and 5 in the chapter_17 directory](chapter_17/)
 * Chapter 18 - WIP
 * Chapter 19 - [WIP](chapter_19/)
 * Chapter 20 - [exercises 1, 2, and 3 in the chapter_20 directory](chapter_20/)
