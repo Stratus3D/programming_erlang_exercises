@@ -2,12 +2,23 @@
 
 **1. The process started in `shell1.erl` is very simple. If it crashes the web application cannot recover. Add error recovery to the application. Add a replay command feature.**
 
-Solution to exercise in [exercise_1](exercise_1/) directory. You'll need to have rebar3 installed to run the exercise.
+Solution to exercise in [exercise_1](exercise_1/) directory. I chose not to implement the replay feature as I didn't feel like I would learn much from implementing it. Somewhere (whether in the client or on the server) you'd need to store a list of previously executed commands and then expose a replay button to run them again.
 
-In an Erl shell run:
+You'll need to have rebar3 installed to run the exercise. In an Erl shell run:
 
 ```
-rebar3 console
+rebar3 shell
+1> webserver:start(2233).
+```
+
+Open `shell1.html` in your web browser. You can crash the shell by entering some expressions that crash it:
+
+```
+Starting Erlang shell:
+1 > A = 1.
+1
+#> {{unbound_var,'B'},[{erl_eval,exprs,2,[]}]}
+Starting Erlang shell:
 ```
 
 **2. Read the code in `websockets.js` and trace what happens when you click the button in the browser. How does the message you get when you click the button find the Erlang processes involved?**
