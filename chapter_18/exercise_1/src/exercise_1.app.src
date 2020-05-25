@@ -1,0 +1,17 @@
+{application, exercise_1,
+ [{description, ""},
+  {vsn, "0.1"},
+  {registered, []},
+  {modules, [
+             exercise_1,
+             shell1,
+             webserver
+            ]},
+  {applications, [
+                 kernel
+                 ,stdlib
+                 ,cowboy
+                 ]},
+  {mod, {exercise_1_app, []}},
+  {env, []}
+ ]}.
