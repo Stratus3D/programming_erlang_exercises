@@ -7,7 +7,7 @@
 %%  Visit http://www.pragmaticprogrammer.com/titles/jaerlang2 for more book information.
 %%---
 -module(shell1).
--export([start/1]).
+-export([start/1, bf/2]).
 
 start(Browser) ->
     Browser ! #{cmd => append_div, id => scroll,

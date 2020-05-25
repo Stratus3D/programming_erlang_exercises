@@ -26,16 +26,26 @@ websocket_handle(_Frame = {text, Msg}, State) ->
     % chose to use this so I could reuse the shell.erl code from the book
     % without having to modify it to handle binary keys.
     Data = jsx:decode(Msg, [{labels, atom}, return_maps]),
-    io:format("Received message: ~p~n", [Data]),
     shell1 ! {self(), Data},
     {ok, State};
 websocket_handle(Frame, State) ->
-    io:format("Received frame: ~p~n", [Frame]),
     {ok, State}.
 
 websocket_info({log, Text}, State) ->
     {reply, {text, Text}, State};
-websocket_info(Info, State) ->
+websocket_info(Info, State) when is_map(Info) ->
+    % If Info is a map we assume it is a message from shell1
     Bin = jsx:encode([Info]),
-    io:format("Sending message: ~p~n", [Bin]),
-    {reply, {text, Bin}, State}.
+    {reply, {text, Bin}, State};
+websocket_info({'EXIT', _Pid, Failure}, State) ->
+    % Show the user the crash
+    BV = shell1:bf("#> <font color='red'>~p</font><br>", [Failure]),
+    Message = #{cmd => append_div, id => scroll, txt => BV},
+    Bin = jsx:encode([Message]),
+
+    % Restart
+    Pid = spawn_link(shell1, start, [self()]),
+    _ = register(shell1, Pid),
+    {reply, {text, Bin}, State};
+websocket_info(_Info, State) ->
+    {ok, State}.
