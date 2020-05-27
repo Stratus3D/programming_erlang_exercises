@@ -19,3 +19,4 @@ Solution in the [exercise_3](exercise_3/) directory. The code is packaged in an 
 References
 
 * http://erlang.org/pipermail/erlang-questions/2018-October/096597.html
+* https://github.com/jeremygoh/rabin-karp-ruby/blob/master/rabin_karp.rb
