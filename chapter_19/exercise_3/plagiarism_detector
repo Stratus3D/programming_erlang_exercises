@@ -1,0 +1,98 @@
+#!/usr/bin/env escript
+% -d
+
+-include_lib("kernel/include/file.hrl").
+
+print_usage() ->
+  io:format("plagiarism_detector text_files/").
+
+main([DirectoryName]) ->
+    % List files in text_files directory
+    {ok, Filenames} = file:list_dir(DirectoryName),
+
+    % Write filenames to ETS table
+    FilenameTable = ets:new(filenames, []),
+    lists:foldl(fun(Filename, Index) ->
+                          FullFilename = filename:join([[DirectoryName, "/"], Filename]),
+                          ets:insert(FilenameTable, {Index, FullFilename}),
+                          Index + 1
+                  end, 1, Filenames),
+
+    % Read all files and compute hashes for each 40 bytes, write each hash to another ETS
+    HashesTable = ets:new(hashes, []),
+    ets:foldl(fun(FileRecord, _) ->
+                      process_file(FileRecord, HashesTable)
+              end, [], FilenameTable),
+
+    % Retrieve all hashes from table
+    % Probably not the intended way to solve this exercise, but this turned out
+    % to be the easiest way to do this.
+    Records = ets:tab2list(HashesTable),
+
+    % Find duplicate hashes
+    Duplicates = find_duplicate_hashes(Records),
+    io:format("Duplicates: ~p", [Duplicates]),
+    ok;
+
+main(_) ->
+  % Print usage message if invalid number of arguments is passed in
+  print_usage(),
+  halt(1).
+
+process_file({FileID, Filename}, HashesTable) ->
+    Results = compute_hashes(Filename, FileID, 0, HashesTable),
+    Results.
+
+compute_hashes(Filename, FileID, Offset, HashesTable) ->
+    case file:read_file(Filename) of
+        {ok, Data} ->
+            Hashes = rolling_hash(Data),
+            % TODO: Insert each hash
+            lists:foldl(fun(Hash, Index) ->
+                                ets:insert(HashesTable, {Hash, {FileID, Index}}),
+                                Index + 1
+                        end, 0, Hashes);
+        eof ->
+            ok
+    end.
+
+find_duplicate_hashes(Records) ->
+    lists:foldl(fun({Hash, {FileID, Offset}}, Acc) ->
+                         case lists:filter(fun({SecondHash, {SecondFileID, _}}) ->
+                                              (Hash =:= SecondHash) and (FileID =/= SecondFileID)
+                                      end, Records) of
+                             [] ->
+                                 Acc;
+                             Values ->
+                                 Processed = lists:map(fun({Hash, {FileID, Offset}}) ->
+                                                               {FileID, Offset}
+                                                               end, Values),
+                                 [{Hash, [{FileID, Offset}|Processed]}|Acc]
+                         end
+                 end, [], Records).
+
+% Probably not the best way to implement a rolling hash, but I was short on time
+rolling_hash(Data) ->
+    % Take the first 40 bytes
+    <<Chunk:40/binary, Rest/binary>> = Data,
+
+    % Compute the hash for the first chunk
+    Hash = erlang:phash2(Chunk),
+
+    % Compute all the following hashes
+    [Hash|compute_next_hash(Chunk, Rest)].
+
+compute_next_hash(LastChunk, <<NextByte:8/binary>>) ->
+    {_, Hash} = hash_from_last_chunk_and_new_byte(LastChunk, NextByte),
+    [Hash];
+compute_next_hash(LastChunk, <<NextByte:8/binary, NewRest/binary>>) ->
+    % Add one byte to the end, remove one byte from the beginning and repeat
+    {Chunk, Hash} = hash_from_last_chunk_and_new_byte(LastChunk, NextByte),
+    [Hash|compute_next_hash(Chunk, NewRest)];
+compute_next_hash(LastChunk, _) ->
+    [].
+
+hash_from_last_chunk_and_new_byte(LastChunk, NextByte) ->
+    <<_:8, RemainderOfLastChunk/binary>> = LastChunk,
+    Chunk = <<RemainderOfLastChunk/binary, NextByte/binary>>,
+    {Chunk, erlang:phash2(Chunk)}.
