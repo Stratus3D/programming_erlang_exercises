@@ -19,7 +19,7 @@ main([DirectoryName]) ->
                   end, 1, Filenames),
 
     % Read all files and compute hashes for each 40 bytes, write each hash to another ETS
-    HashesTable = ets:new(hashes, []),
+    HashesTable = ets:new(hashes, [duplicate_bag]),
     ets:foldl(fun(FileRecord, _) ->
                       process_file(FileRecord, HashesTable)
               end, [], FilenameTable),
@@ -31,7 +31,8 @@ main([DirectoryName]) ->
 
     % Find duplicate hashes
     Duplicates = find_duplicate_hashes(Records),
-    io:format("Duplicates: ~p", [Duplicates]),
+    io:format("length: ~p~n", [length(Records)]),
+    io:format("Duplicates: ~p~n", [Duplicates]),
     ok;
 
 main(_) ->
@@ -40,14 +41,12 @@ main(_) ->
   halt(1).
 
 process_file({FileID, Filename}, HashesTable) ->
-    Results = compute_hashes(Filename, FileID, 0, HashesTable),
-    Results.
+    compute_hashes(Filename, FileID, 0, HashesTable).
 
 compute_hashes(Filename, FileID, Offset, HashesTable) ->
     case file:read_file(Filename) of
         {ok, Data} ->
             Hashes = rolling_hash(Data),
-            % TODO: Insert each hash
             lists:foldl(fun(Hash, Index) ->
                                 ets:insert(HashesTable, {Hash, {FileID, Index}}),
                                 Index + 1
@@ -77,22 +76,32 @@ rolling_hash(Data) ->
     <<Chunk:40/binary, Rest/binary>> = Data,
 
     % Compute the hash for the first chunk
-    Hash = erlang:phash2(Chunk),
+    Hash = hash_string(Chunk),
 
     % Compute all the following hashes
-    [Hash|compute_next_hash(Chunk, Rest)].
+    [Hash|compute_next_hash(Hash, Chunk, Rest)].
 
-compute_next_hash(LastChunk, <<NextByte:8/binary>>) ->
-    {_, Hash} = hash_from_last_chunk_and_new_byte(LastChunk, NextByte),
-    [Hash];
-compute_next_hash(LastChunk, <<NextByte:8/binary, NewRest/binary>>) ->
+compute_next_hash(LastHash, <<LastByte:1/binary, Chunk/binary>>, <<>>) ->
+    [hash_string(LastByte, LastHash, <<>>)];
+compute_next_hash(LastHash, <<LastByte:1/binary, Chunk/binary>>, <<NextByte:1/binary, NewRest/binary>>) ->
     % Add one byte to the end, remove one byte from the beginning and repeat
-    {Chunk, Hash} = hash_from_last_chunk_and_new_byte(LastChunk, NextByte),
-    [Hash|compute_next_hash(Chunk, NewRest)];
-compute_next_hash(LastChunk, _) ->
-    [].
+    Hash = hash_string(LastByte, LastHash, NextByte),
+    [Hash|compute_next_hash(Hash, <<Chunk/binary, NextByte/binary>>, NewRest)].
 
-hash_from_last_chunk_and_new_byte(LastChunk, NextByte) ->
-    <<_:8, RemainderOfLastChunk/binary>> = LastChunk,
-    Chunk = <<RemainderOfLastChunk/binary, NextByte/binary>>,
-    {Chunk, erlang:phash2(Chunk)}.
+% String to integer hash
+hash_string(String) ->
+    Integers = [Byte || <<Byte>> <= String],
+    lists:foldl(fun(X, Sum) -> X + Sum end, 0, Integers).
+
+% Hash plus new minus old
+hash_string(Old, Hash, New) ->
+    OldInt = hash_byte(Old),
+    NewInt = hash_byte(New),
+    % Remove old character
+    (Hash - OldInt) + NewInt.
+
+% Byte to integer
+hash_byte(<<Integer>>) ->
+    Integer;
+hash_byte(<<>>) ->
+    0.
