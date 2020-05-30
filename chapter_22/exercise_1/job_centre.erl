@@ -38,17 +38,17 @@ handle_call({add_job, Fun}, _From, {LastId, Tab}) ->
     JobId = LastId + 1,
 
     % Insert the ID and work function into the ets table
-    true = ets:insert(Tab, {JobId, Fun}),
+    true = ets:insert(Tab, job(JobId, Fun)),
     {reply, JobId, {JobId, Tab}};
 handle_call(checkout_job, _From, {_, Tab} = State) ->
     % Find a job
-    case ets:match(Tab, {'$1', '$2'}) of
+    case ets:match(Tab, {'$1', '$2', '_'}) of
         [] ->
             % If none return `no`
             {reply, no, State};
         [[JobId, JobFun]|_] ->
             % If one is found mark it as in_progess and return it to the caller
-            ets:insert(Tab, {JobId, JobFun, in_progres}),
+            ets:insert(Tab, job(JobId, JobFun, in_progress)),
             {reply, {JobId, JobFun}, State}
     end;
 handle_call({remove_job, JobId}, _From, {_, Tab} = State) ->
@@ -67,3 +67,10 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
+% Helper functions for manipulating job state
+job(JobId, JobFun) ->
+    job(JobId, JobFun, pending).
+
+job(JobId, JobFun, State) ->
+    {JobId, JobFun, State}.
