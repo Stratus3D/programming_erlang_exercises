@@ -25,7 +25,25 @@ ok
 
 **2. Add function named `job_centre:statistics/0` that reports the status of the jobs in the queue.**
 
+Solution in the [exercise_2/](exercise_2/) directory.
 
+```
+erl
+1> job_centre:start_link().
+{ok,<0.67.0>}
+2> job_centre:add_job(fun() -> io:format("Working on job 1") end).
+1
+3> job_centre:add_job(fun() -> io:format("Working on job 2") end).
+2
+4> {JobID, JobFun} = job_centre:work_wanted().
+{1,#Fun<erl_eval.20.99386804>}
+5> JobFun().
+Working on job 1ok
+6> job_centre:job_done(JobID).
+not_found
+7> job_centre:statistics().
+[{1,in_progress},{2,pending}]
+```
 
 **3. Add code to monitor the workers. If a worker dies makesure the jobs it was doing are returned to the queue of waiting jobs.**
 
