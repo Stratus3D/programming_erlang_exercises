@@ -30,9 +30,21 @@ main([DirectoryName]) ->
     Records = ets:tab2list(HashesTable),
 
     % Find duplicate hashes
-    Duplicates = find_duplicate_hashes(Records),
-    io:format("length: ~p~n", [length(Records)]),
-    io:format("Duplicates: ~p~n", [Duplicates]),
+    [Record|Records2] = Records,
+    Duplicates = find_duplicate_hashes(Record, Records2, []),
+
+    % Convert file IDs back to filenames
+    IdsToFilenames = fun({Hash, Locations}) ->
+            MappedLocations = lists:map(fun({FileID, Offset}) ->
+                                                [{_, Filename}] = ets:lookup(FilenameTable, FileID),
+                                                {Filename, Offset}
+                                        end, Locations),
+            {Hash, MappedLocations}
+    end,
+    PrintableDuplicates = lists:map(IdsToFilenames, Duplicates),
+
+    % Print the results
+    io:format("Duplicates: ~p~n", [PrintableDuplicates]),
     ok;
 
 main(_) ->
@@ -41,34 +53,35 @@ main(_) ->
   halt(1).
 
 process_file({FileID, Filename}, HashesTable) ->
-    compute_hashes(Filename, FileID, 0, HashesTable).
+    compute_hashes(Filename, FileID, HashesTable).
 
-compute_hashes(Filename, FileID, Offset, HashesTable) ->
+compute_hashes(Filename, FileID, HashesTable) ->
     case file:read_file(Filename) of
         {ok, Data} ->
             Hashes = rolling_hash(Data),
             lists:foldl(fun(Hash, Index) ->
-                                ets:insert(HashesTable, {Hash, {FileID, Index}}),
+                                true = ets:insert(HashesTable, {Hash, {FileID, Index}}),
                                 Index + 1
-                        end, 0, Hashes);
+                        end, 0, Hashes),
+            ok;
         eof ->
             ok
     end.
 
-find_duplicate_hashes(Records) ->
-    lists:foldl(fun({Hash, {FileID, Offset}}, Acc) ->
-                         case lists:filter(fun({SecondHash, {SecondFileID, _}}) ->
-                                              (Hash =:= SecondHash) and (FileID =/= SecondFileID)
-                                      end, Records) of
-                             [] ->
-                                 Acc;
-                             Values ->
-                                 Processed = lists:map(fun({Hash, {FileID, Offset}}) ->
-                                                               {FileID, Offset}
-                                                               end, Values),
-                                 [{Hash, [{FileID, Offset}|Processed]}|Acc]
-                         end
-                 end, [], Records).
+find_duplicate_hashes(_Record, [], Acc) -> Acc;
+find_duplicate_hashes({Hash, {FileID, Offset} = Location}, [NewRecord|NewRecords] = Records, Acc) ->
+    DuplicateFinder = fun({SecondHash, {SecondFileID, SecondFileOffset} = SecondLocation}) ->
+            (Hash =:= SecondHash) and (Location =/= SecondLocation)
+    end,
+    case lists:filter(DuplicateFinder, Records) of
+        [] ->
+            find_duplicate_hashes(NewRecord, NewRecords, Acc);
+        Values ->
+            Processed = lists:map(fun({Hash, {FileID, Offset}}) ->
+                                          {FileID, Offset}
+                                  end, Values),
+            find_duplicate_hashes(NewRecord, NewRecords, [{Hash, [{FileID, Offset}|Processed]}|Acc])
+    end.
 
 % Probably not the best way to implement a rolling hash, but I was short on time
 rolling_hash(Data) ->
@@ -87,6 +100,10 @@ compute_next_hash(LastHash, <<LastByte:1/binary, Chunk/binary>>, <<NextByte:1/bi
     % Add one byte to the end, remove one byte from the beginning and repeat
     Hash = hash_string(LastByte, LastHash, NextByte),
     [Hash|compute_next_hash(Hash, <<Chunk/binary, NextByte/binary>>, NewRest)].
+
+% Below are the functions for a very primitive implementation of the Rabin-Karp
+% string search algorithm. This implementation tends to return a lot of false
+% matches.
 
 % String to integer hash
 hash_string(String) ->
