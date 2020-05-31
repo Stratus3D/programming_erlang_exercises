@@ -72,6 +72,31 @@ Working on job 1ok
 
 **4. Check for lazy workers. Change the work wanted function to return `{JobNumber, JobTime, F}` where JobTime is the number of seconds that the worker as to complete the job by. At `JobTime - 1`, the server should send a `hurry_up` message to the worker if it has not finished the job. And at time `JobTime + 1`, it should kill the worker process with an `exit(Pid, youre_fired)` call.**
 
+Solution in the [exercise_4/](exercise_4/) directory.
+```
+erl
+1> job_centre:start_link().
+{ok,<0.67.0>}
+2> job_centre:add_job(fun() -> io:format("Working on job 1") end).
+1
+3> job_centre:add_job(fun() -> io:format("Working on job 2") end).
+2
+4> spawn(fun() ->
+    {JobID, JobFun} = job_centre:work_wanted(),
+    JobFun(),
+    receive
+      Msg ->
+        io:format("~p", [Msg])
+    after 3000 ->
+        ok
+    end
+  end).
+Working on job 1<0.71.0>
+Worker process <0.71.0> crashed with reason test_failureDOWN message from unknown process
+5> job_centre:statistics().
+[{1,pending},{2,pending}]
+```
+
 **5. Implement a trade union server to monitor the workers. Check that they are not fired without being sent a warning.**
 
 Not going to implement this as it's not a design pattern I've seen regularly used in OTP applications.
