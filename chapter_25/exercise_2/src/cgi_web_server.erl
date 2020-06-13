@@ -37,7 +37,6 @@ init(Req, State) ->
     handle1(Path, Req, State).
 
 handle1(<<"/cgi">>, Req, State) ->
-    io:format("Got here2"),
     Args = cowboy_req:parse_qs(Req),
     {ok, Bin, Req2} = cowboy_req:read_body(Req),
     Val = case Bin of
@@ -50,7 +49,6 @@ handle1(<<"/cgi">>, Req, State) ->
     Response = call(Args, Val),
     Json = jsx:encode(Response),
     {ok, Req3} = cowboy_req:reply(200, #{}, Json, Req2),
-    io:format("Got here3"),
     {ok, Req3, State};
 handle1(Path, Req, State) ->
     Response = read_file(Path),
