@@ -24,3 +24,33 @@ Then send a request via curl:
 ```
 curl 'http://localhost:12345/cgi?mod=ping_pong&func=ping' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 ```
+
+**3. Do a security audit of the cowboy example code. There are a number of security problems with this code.**
+
+I identified security issues with the code for the exercise:
+
+* As the question in the book points out, the requested file path is unchecked, so it is possible to access files outside of the web server directory.
+* Query string parameters for module name and function name are converted to atoms using `list_to_atom/1` which an attacker could use to fill up the atom table and crash the server.
+* Prior to the changes for exercise 2, any function could be invoked.
+* When a file cannot be read the filename is not properly escaped when rendering the error page, which means the client can inject HTML and JavaScript into the page.
+
+Improved code in the [exercise_3](exercise_3/) directory.
+
+Start the server:
+
+```
+rebar3 shell
+===> Verifying dependencies...
+Erlang/OTP 20 [erts-9.3] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:0] [hipe] [kernel-poll:false]
+
+Eshell V9.3  (abort with ^G)
+1> cgi_web_server:start().
+```
+
+Then send a request via curl:
+
+```
+curl 'http://localhost:12345/cgi?mod=ping_pong&func=ping' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+```
+
+**4. **
