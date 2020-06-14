@@ -1,0 +1,14 @@
+{application, exercise_4,
+ [{description, ""},
+  {vsn, "0.1"},
+  {registered, []},
+  {modules, [
+             cgi_web_server
+            ]},
+  {applications, [
+                 kernel
+                 ,stdlib
+                 ,cowboy
+                 ]},
+  {env, []}
+ ]}.
