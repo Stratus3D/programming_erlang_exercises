@@ -48,11 +48,11 @@ handle1(<<"/cgi">>, Req, State) ->
           end,
     Response = call(Args, Val),
     Json = jsx:encode(Response),
-    {ok, Req3} = cowboy_req:reply(200, #{}, Json, Req2),
+    Req3 = cowboy_req:reply(200, #{}, Json, Req2),
     {ok, Req3, State};
 handle1(Path, Req, State) ->
     Response = read_file(Path),
-    {ok, Req1} = cowboy_req:reply(200, #{}, Response, Req),
+    Req1 = cowboy_req:reply(200, #{}, Response, Req),
     {ok, Req1, State}.
 
 terminate(_Reason, _Req, _State) ->
