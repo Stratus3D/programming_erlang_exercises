@@ -53,4 +53,23 @@ Then send a request via curl:
 curl 'http://localhost:12345/cgi?mod=ping_pong&func=ping' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 ```
 
-**4. **
+**4. Any host can connect to the server. Change the code so as to only allow connections from hosts with known IP addresses. Store these hosts a persistent database. Keep track of how many times connections are made fom a specific host. Blacklist hosts that connect too frequently with a given time period**
+
+Solution in the [exercise_4](exercise_4/) directory. I chose not to implement the IP blacklisting feature as I was short on time. Blacklisting IPs that make too many connections would not be difficult but would require looking up information on previous connections when handling a new request in order to determine if the rate limit has been exceeded for that IP. Once the rate limit has been exceeded the IP would be written to a new blacklist table in the Mnesia database, which would also have to be checked before handling each request.
+
+Start the server:
+
+```
+rebar3 shell
+===> Verifying dependencies...
+Erlang/OTP 20 [erts-9.3] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:0] [hipe] [kernel-poll:false]
+
+Eshell V9.3  (abort with ^G)
+1> cgi_web_server:start().
+```
+
+Then send a request via curl:
+
+```
+curl 'http://localhost:12345/cgi?mod=ping_pong&func=ping' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+```
