@@ -31,7 +31,7 @@ Solutions to the exercises in Joe Armstrong's book *[Programming Erlang](https:/
 * Chapter 22 - [exercises 1, 2, 3, and 4 in the chapter_22 directory](chapter_22/)
 * Chapter 23 - WIP
 * Chapter 24 - WIP
-* Chapter 25 - WIP
+* Chapter 25 - [exercises 2, 3, 4, 5, and 6 in the chapter_25 directory](chapter_25/)
 * Chapter 26 - WIP
 * Chapter 27 - no exercises
 
