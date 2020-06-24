@@ -73,3 +73,30 @@ Then send a request via curl:
 ```
 curl 'http://localhost:12345/cgi?mod=ping_pong&func=ping' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 ```
+
+**5. Change the web server to allow dynamic recompilation of the modules that are invoked by the CGI interface. When a module is invoked by the CGI interface read the timestamp on the beam file and compare it with the timestamp on the corresponding `.erl` file. Then recompile and load the Erlang code if needed**
+
+Solution in the [exercise_5](exercise_5/) directory.
+
+Start the server:
+
+```
+rebar3 shell
+===> Verifying dependencies...
+Erlang/OTP 20 [erts-9.3] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:0] [hipe] [kernel-poll:false]
+
+Eshell V9.3  (abort with ^G)
+1> cgi_web_server:start().
+```
+
+Then send a request via curl:
+
+```
+curl 'http://localhost:12345/cgi?mod=ping_pong&func=ping' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+```
+
+Then modify the `ping_pong` module (edit it so the return value is changed from `pong` to some other string). Then send another request via curl:
+
+```
+curl 'http://localhost:12345/cgi?mod=ping_pong&func=ping' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+```
