@@ -100,3 +100,15 @@ Then modify the `ping_pong` module (edit it so the return value is changed from 
 ```
 curl 'http://localhost:12345/cgi?mod=ping_pong&func=ping' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 ```
+
+**6. Rebar is an excellent example of an Erlang program that is distributed as a "self contained" binary. Copy the rebar binary to a scratch directory and rename it to `rebar.zip`. Rebar is actually a zip file. UNzip it and examine the contents. Make your own self contained binary out of the cowboy example.**
+
+While rebar is [self-contained Erlang script](https://github.com/rebar/rebar/blob/master/bootstrap), rebar3 does not appear to be a zip archive that can be unpacked by the `unzip` command. Creating a self contained binary with an Erlang application inside it can be done in a couple steps:
+
+* Compile the Erlang files much like you would with a typical Erlang release
+* Create an archive containing the compiled beam files
+* Prepend `#! /usr/bin/env escript` and `%%!` lines to the beginning of the archive to make it an escript executable. `%%! -escript main exercise_5 -pz exercise_5/exercise_5/ebin`
+
+See http://erlang.org/doc/man/escript.html#exports for the `escript` module functions that perform these steps.
+
+With `rebar3` things are even easier. There is a `rebar escriptize` command that automates everything. See the solution in the [exercise_6](exercise_6/) directory.
