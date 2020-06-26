@@ -1,0 +1,17 @@
+{application, exercise_6,
+ [{description, ""},
+  {vsn, "0.1"},
+  {registered, []},
+  {modules, [
+             cgi_web_server,
+             exercise_6,
+             ping_pong
+            ]},
+  {applications, [
+                 kernel
+                 ,stdlib
+                 ,cowboy
+                 ]},
+  {env, []},
+  {mod, {cgi_web_server, []}}
+ ]}.
