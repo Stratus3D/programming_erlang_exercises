@@ -10,12 +10,9 @@
 
 -export([start/0, get_ip_info/0, start_from_shell/1, init/2, handle1/3, terminate/3]).
 
--include_lib("kernel/include/file.hrl").
-
 -define(MODULE_WHITELIST, [ping_pong]).
 -define(IP_WHITELIST, [{127,0,0,1}]).
 -define(NODE_NAMES, [node()]).
--define(APPLICATION, exercise_6).
 
 -record(allowed_ip, {ip_address, created}).
 -record(ip_connection, {ip_address, number_connections}).
@@ -156,15 +153,6 @@ call([{<<"mod">>,MB},{<<"func">>,FB}], X) ->
             % Use list_to_existing_atom to prevent invalid parameters from
             % flooding the atom table
             Func = list_to_existing_atom(binary_to_list(FB)),
-
-            % Check if Mod needs to be recompiled
-            % Is .erl file newer than the .beam file?
-            case erl_file_modified(Mod) of
-                true ->
-                    % Reload module
-                    reload_module(Mod);
-                false -> ok
-            end,
             apply(Mod, Func, [X]);
         _ ->
             % Return an error if module not in whitelist
@@ -182,45 +170,3 @@ read_file(Path) ->
             % markup
 	        ["<pre>cannot read:", xmerl_lib:export_text(Path), "</pre>"]
     end.
-
-reload_module(Module) ->
-    code:purge(Module),
-    compile:file(erl_path(?APPLICATION, Module), [{outdir, beam_dir(Module)}]),
-    code:load_file(Module).
-
-erl_file_modified(Module) ->
-    Filename = erl_path(?APPLICATION, Module),
-    {ok, #file_info{mtime=ModifiedTime}} = file:read_file_info(Filename),
-
-    BeamFilename = beam_path(Module),
-    {ok, #file_info{mtime=BeamModifiedTime}} = file:read_file_info(BeamFilename),
-    %io:format("Modified Time: ~p~n", [ModifiedTime]),
-    %io:format("Beam Modified Time: ~p~n", [BeamModifiedTime]),
-
-    {Days, _Time} = calendar:time_difference(ModifiedTime, BeamModifiedTime),
-    case Days of
-        Days when Days >= 0 ->
-            io:format("Beam file is up to date~n", []),
-            false;
-        _ ->
-            io:format("Beam file is out of date. Recompile~n", []),
-            true
-    end.
-
-% Get the path to ping_pong.beam
-beam_path(ModuleName) ->
-    code:which(ModuleName).
-
-% Get the directory to write the recompiled ping_pong module to
-beam_dir(ModuleName) ->
-    filename:dirname(code:which(ModuleName)).
-
-% Kind of hacky because we have to figure out where the .erl files live inside
-% the rebar3 _build directory
-erl_path(ApplicationName, ModuleName) ->
-    % Get the path to the priv dir for this application.
-    PrivDirPath = code:priv_dir(ApplicationName),
-    ApplicationDir = filename:dirname(PrivDirPath),
-
-    % Erlang files should be ../src/ relative to this directory
-    filename:absname(["src/", ModuleName, ".erl"], ApplicationDir).
