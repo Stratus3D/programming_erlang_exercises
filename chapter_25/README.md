@@ -111,4 +111,4 @@ While rebar is [self-contained Erlang script](https://github.com/rebar/rebar/blo
 
 See http://erlang.org/doc/man/escript.html#exports for the `escript` module functions that perform these steps.
 
-With `rebar3` things are even easier. There is a `rebar escriptize` command that automates everything. See the solution in the [exercise_6](exercise_6/) directory.
+With `rebar3` things are even easier. There is a `rebar escriptize` command that automates everything. See the solution in the [exercise_6](exercise_6/) directory. I started with the code from exercise 25.4 as the starting point for this exercise.
