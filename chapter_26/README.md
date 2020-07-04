@@ -101,8 +101,8 @@ erl -sname holmes
 In a third shell call the `run` function and pass in the list of nodes:
 
 ```
-erl
-1> web_profiler:run(['watson@trevor-ThinkPad-E550', 'holmes@trevor-ThinkPad-E550'], 10000).
+erl -sname profiler
+1> web_profiler:run(['watson@localhost', 'holmes@localhost'], 10000).
 182777
 ```
 

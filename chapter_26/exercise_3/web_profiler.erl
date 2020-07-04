@@ -17,7 +17,6 @@ run(Timeout) ->
     % Return the time it took to execute all of the requests
     Time.
 
-
 pmap(F, L) ->
     S = self(),
     Ref = make_ref(),
