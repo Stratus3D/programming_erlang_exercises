@@ -17,8 +17,21 @@ true
 
 Solution in the [exercise_2/](exercise_2/) directory.
 
-Followed much of the advice from https://learnyousomeerlang.com/building-applications-with-otp. Also see https://github.com/esumbar/programming-erlang-chapter-23 for another example.
+Followed much of the advice from https://learnyousomeerlang.com/building-applications-with-otp. Also see https://github.com/esumbar/programming-erlang-chapter-23 for another example. The exercises for this chapter were the most difficult for me to complete, and I ended up doing them after all the other exercises.
 
 ```
-
+rebar3 shell
+1> sellaprime_supervisor:start_in_shell_for_testing().
+true
+2> prime_tester_server:is_prime(7).
+{ok,true}
+3>
 ```
+
+**3. Change the code in the prime server testers so that each prime server tester maintains its own queue of requests. Remove the queue server. Write a load balancer that keeps track of the work being done and the requests to be done by the prime tester servers. Requests to test new primes should now be sent to the load balancer. Arrange things so that the load balancer sneds requests to the least loaded server.**
+
+**4. Implement a supervisor heirarchy so that if any prime number tester server crashes, it should be restarted. If the load balancer crashes, crash all the prime tester servers and restart everything.**
+
+**5. Keep all the data necessary to restart everything replicated on two machines.**
+
+**6. Implement a restart to restart everything if an entire machine crashes.**
