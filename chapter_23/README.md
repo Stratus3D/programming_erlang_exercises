@@ -28,6 +28,14 @@ true
 3>
 ```
 
+I also wrote a simple test module that can be run:
+
+```
+rebar3 shell
+1> prime_tester_server_test:run().
+ok
+```
+
 **3. Change the code in the prime server testers so that each prime server tester maintains its own queue of requests. Remove the queue server. Write a load balancer that keeps track of the work being done and the requests to be done by the prime tester servers. Requests to test new primes should now be sent to the load balancer. Arrange things so that the load balancer sneds requests to the least loaded server.**
 
 **4. Implement a supervisor heirarchy so that if any prime number tester server crashes, it should be restarted. If the load balancer crashes, crash all the prime tester servers and restart everything.**
