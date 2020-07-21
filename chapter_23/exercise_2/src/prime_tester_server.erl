@@ -23,7 +23,7 @@
 -define(SERVER, ?MODULE).
 
 -record(state, {limit=0,
-                refs,
+                pids=#{},
                 queue=queue:new()}).
 
 %%%===================================================================
@@ -54,13 +54,13 @@ init({Limit}) ->
     {ok, #state{limit=Limit}}.
 
 % If we still haven't hit our limit for workers, spawn one
-handle_call({is_prime, Number}, _From, State = #state{limit=Limit, refs=R}) when Limit > 0 ->
+handle_call({is_prime, Number}, From, State = #state{limit=Limit, pids=R}) when Limit > 0 ->
     % Start the worker
-    {ok, Pid} = supervisor:start_child({global, prime_tester_worker_sup}, [Number]),
-    Ref = erlang:monitor(process, Pid),
+    {ok, Pid} = supervisor:start_child(prime_tester_worker_sup, [Number]),
+    _Ref = erlang:monitor(process, Pid),
 
     % We will reply when the worker replies to us
-    {noreply, State#state{limit=Limit-1, refs=gb_sets:add(Ref,R)}};
+    {noreply, State#state{limit=Limit-1, pids=maps:put(Pid, From, R)}};
 handle_call({is_prime, Number}, From, State = #state{limit=Limit, queue=Q}) when Limit =< 0 ->
     % If we've already hit our limit for workers queue the request
     {noreply, State#state{queue=queue:in({From, Number}, Q)}};
@@ -68,18 +68,39 @@ handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
 
-% TODO: Handle getting return values back from the workers
+handle_cast({worker_result, Pid, Result}, State = #state{pids=Pids}) ->
+    % Lookup client pid in map
+    case maps:is_key(Pid, Pids) of
+        true ->
+            % Send the reply back to the original `From` pid
+            gen_server:reply(maps:get(Pid, Pids), {ok, Result});
+        false ->
+            % If we don't find a pid in a map ignore this message
+            ok
+    end,
+    {noreply, State#state{pids=maps:remove(Pid, Pids)}};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
-handle_info({'DOWN', Ref, process, _Pid, _}, State = #state{refs=Refs}) ->
-    io:format("received down msg~n"),
-    case gb_sets:is_element(Ref, Refs) of
+% Handle getting a down message from a finished worker
+handle_info({'DOWN', _Ref, process, Pid, _}, State = #state{pids=Pids}) ->
+    case maps:is_key(Pid, Pids) of
         true ->
-            handle_down_worker(Ref, State);
+            handle_down_worker(Pid, State);
         false -> %% Not our responsibility
             {noreply, State}
     end;
+handle_info({worker_result, Pid, Result}, State = #state{pids=Pids}) ->
+    % Lookup client pid in map
+    case maps:is_key(Pid, Pids) of
+        true ->
+            % Send the reply back to the original `From` pid
+            gen_server:reply(maps:get(Pid, Pids), {ok, Result});
+        false ->
+            % If we don't find a pid in a map ignore this message
+            ok
+    end,
+    {noreply, State#state{pids=maps:remove(Pid, Pids)}};
 handle_info(_Info, State) ->
     {noreply, State}.
 
@@ -93,16 +114,16 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-% TODO: Handle getting return values back from the workers
-handle_down_worker(Ref, State = #state{limit=Limit, refs=Refs, queue=Queue}) ->
+% Handle getting return values back from the workers
+handle_down_worker(Pid, State = #state{limit=Limit, pids=Pids, queue=Queue}) ->
     case queue:out(Queue) of
         {{value, {From, Number}}, Queue} ->
-            {ok, Pid} = supervisor:start_child({global, prime_tester_worker_sup}, [Number]),
-            NewRef = erlang:monitor(process, Pid),
-            NewRefs = gb_sets:insert(NewRef, gb_sets:delete(Ref,Refs)),
+            {ok, Pid} = supervisor:start_child(prime_tester_worker_sup, [Number]),
+            NewPid = erlang:monitor(process, Pid),
+            NewPids = gb_sets:insert(NewPid, maps:remove(Pid,Pids)),
             gen_server:reply(From, {ok, Pid}),
-            {noreply, State#state{refs=NewRefs, queue=Queue}};
+            {noreply, State#state{pids=NewPids, queue=Queue}};
         {empty, _} ->
             % If nothing in the queue continue as before
-            {noreply, State#state{limit=Limit+1, refs=gb_sets:delete(Ref, Refs)}}
+            {noreply, State#state{limit=Limit+1, pids=gb_sets:delete(Pid, Pids)}}
     end.

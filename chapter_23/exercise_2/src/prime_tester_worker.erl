@@ -10,7 +10,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, is_prime/1]).
+-export([start_link/1, stop/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -22,7 +22,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {}).
+-record(state, {number}).
 
 %%%===================================================================
 %%% API
@@ -35,11 +35,11 @@
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+start_link(Number) ->
+    gen_server:start_link(?MODULE, [Number], []).
 
-is_prime(Number) when is_integer(Number) ->
-    gen_server:call(?MODULE, {is_prime, Number}).
+stop(Pid) ->
+    gen_server:call(Pid, stop).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -56,16 +56,14 @@ is_prime(Number) when is_integer(Number) ->
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([]) ->
-    {ok, #state{}}.
+init([Number]) ->
+    {ok, #state{number=Number}, 0}.
 
 %%--------------------------------------------------------------------
 %% @private
 %%--------------------------------------------------------------------
-handle_call({is_prime, Number}, _From, State) ->
-    % Invoke lib_primes:is_prime to determine if the number is prime or not
-    Result = lib_primes:is_prime(Number),
-    {reply, {ok, Result}, State};
+handle_call(stop, _From, State) ->
+    {stop, normal, ok, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -80,6 +78,12 @@ handle_cast(_Msg, State) ->
 %%--------------------------------------------------------------------
 %% @private
 %%--------------------------------------------------------------------
+handle_info(timeout, State = #state{number=Number}) ->
+    % Invoke lib_primes:is_prime to determine if the number is prime or not
+    Result = lib_primes:is_prime(Number),
+    % Send the results back to the prime_tester_server
+    ok = gen_server:cast(prime_tester_server, {worker_result, self(), Result}),
+    {noreply, State};
 handle_info(_Info, State) ->
     {noreply, State}.
 

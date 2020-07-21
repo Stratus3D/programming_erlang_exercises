@@ -22,12 +22,12 @@ start_link(Args) ->
 init([]) ->
     {ok, {{one_for_one, 3, 10},
 	  [
-	   {prime_tester_work_sup,
+	   {prime_tester_worker_sup,
 	    {prime_tester_worker_sup, start_link, []},
 	    permanent,
 	    10000,
 	    supervisor,
-	    [prime_tester_server]},
+	    [prime_tester_worker_sup]},
 	   {prime_tester_server,
 	    {prime_tester_server, start_link, [10]},
 	    permanent,
