@@ -20,7 +20,7 @@ start_in_shell_for_testing() ->
 start_link(Args) ->
     supervisor:start_link({local,?MODULE}, ?MODULE, Args).
 init([]) ->
-    {ok, {{one_for_one, 3, 10},
+    {ok, {{one_for_all, 3, 10},
 	  [
 	   {prime_tester_worker_sup,
 	    {prime_tester_worker_sup, start_link, []},
