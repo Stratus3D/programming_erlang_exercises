@@ -61,8 +61,39 @@ ok
 
 **4. Implement a supervisor heirarchy so that if any prime number tester server crashes, it should be restarted. If the load balancer crashes, crash all the prime tester servers and restart everything.**
 
-Solved in exercise 4.
+Solved in exercise 3.
 
 **5. Keep all the data necessary to restart everything replicated on two machines.**
 
+Solution in the [exercise_5/](exercise_5/) directory.
+
+As with exercise 2, I followed the advice I found on https://github.com/esumbar/programming-erlang-chapter-23 and used Mnesia for replicating state data between nodes. While I did implement some basic replication, I don't really think replication makes a lot of sense for any application like this. Requests are short lived and are only processed so that we can send a response back to the process. Once the whole node goes down there is a good chance that original process that made the request no longer exists, so even if we restarted everything on another node the state would be worthless of the processes that sent all the requests were gone. And even if those calling processes got restarted they would have different pids, so we would have no way of figuring out where to send results even if we did resume processing of queued requests on the other node.
+
+```
+rebar3 shell --sname holmes@localhost
+1> sellaprime_supervisor:start_in_shell_for_testing([node(), watson@localhost]).
+true
+2> prime_tester_load_balancer:is_prime(7).
+{ok,true}
+3>
+```
+
+And in another shell (and in other directory) run the other node:
+
+```
+mkdir watson; cd watson
+rebar3 shell --sname watson@localhost
+1>
+```
+
+I also wrote a simple test module that can be run (make sure you are running the watson node as well as shown above):
+
+```
+rebar3 shell
+1> prime_tester_server_test:run([node(), watson@localhost]).
+ok
+```
+
 **6. Implement a restart to restart everything if an entire machine crashes.**
+
+Solved in exercise 5.
