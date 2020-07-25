@@ -32,8 +32,10 @@ init(Nodes, Fields) ->
 
 get_state() ->
     {atomic, Result} = mnesia:transaction(fun() ->
-                               [State|_] = mnesia:read(?TABLE, mnesia:first(?TABLE)),
-                               State
+                               case mnesia:read(?TABLE, mnesia:first(?TABLE)) of
+                                   [State|_] -> State;
+                                   [] -> false
+                               end
                        end),
     Result.
 

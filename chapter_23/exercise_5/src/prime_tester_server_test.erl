@@ -1,8 +1,8 @@
 -module(prime_tester_server_test).
 
--export([run/0]).
+-export([run/1]).
 
-run() ->
+run(Nodes) ->
     % Start the application
     ok = application:start(sellaprime),
 

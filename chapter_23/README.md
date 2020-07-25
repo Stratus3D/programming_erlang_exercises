@@ -90,7 +90,7 @@ I also wrote a simple test module that can be run (make sure you are running the
 
 ```
 rebar3 shell
-1> prime_tester_server_test:run([node(), watson@localhost]).
+1> prime_tester_server_test:run().
 ok
 ```
 

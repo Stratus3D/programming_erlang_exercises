@@ -66,7 +66,7 @@ init({Limit, Nodes}) ->
 
     % Read Mnesia state
     State = case lib_tester_db:get_state() of
-                '$end_of_table' ->
+                false ->
                     #state{};
                 LoadedState ->
                     io:format("LoadedState: ~p", [LoadedState]),

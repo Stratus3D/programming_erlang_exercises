@@ -8,6 +8,6 @@
              lib_tester_db]},
   %{registered,[prime_server, sellaprime_super]},
   {applications, [kernel,stdlib]},
-  {mod, {sellaprime_app,[]}},
+  {mod, {sellaprime_app,[[holmes@localhost, watson@localhost]]}},
   {start_phases, []}
  ]}.
